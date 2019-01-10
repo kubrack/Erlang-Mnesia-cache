@@ -7,7 +7,7 @@
 %% API.
 -export([get/1, set/2, set/3, start/0]).
 
-%% API implementation.
+%% Implementation with handle TTL via timer.
 
 get(Key) ->
 	case mnesia:dirty_read(?CACHE_TABLE, Key) of
@@ -25,10 +25,10 @@ set(Key, Val, Opts) ->
 		{ttl, 0} ->
 			ok;
 		{ttl, infinity} ->
-			mnesia:dirty_write(?CACHE_TABLE, #cache{key=Key, val=Val}); % ok 
-		{ttl, Ttl} -> 
+			mnesia:dirty_write(?CACHE_TABLE, #cache{key=Key, val=Val}); % ok
+		{ttl, Ttl} ->
 			timer:apply_after(timer:seconds(Ttl), mnesia, dirty_delete, [?CACHE_TABLE, Key]),
-			mnesia:dirty_write(?CACHE_TABLE, #cache{key=Key, val=Val}); % ok 
+			mnesia:dirty_write(?CACHE_TABLE, #cache{key=Key, val=Val}); % ok
 		false ->
 			set(Key, Val)
 	end.
@@ -36,9 +36,9 @@ set(Key, Val, Opts) ->
 start() ->
 	ok = mnesia:start(),
 	case mnesia:create_table(?CACHE_TABLE, [{attributes, record_info(fields, cache)}]) of
-		{atomic,ok} -> 
+		{atomic,ok} ->
 			true;
-		{aborted,{already_exists,Info}} -> 
+		{aborted,{already_exists,Info}} ->
 			logger:notice("mnesia:create_table: already_exists: ~p", [Info]),
 			true
 	end.
