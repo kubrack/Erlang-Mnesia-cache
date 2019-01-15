@@ -1,7 +1,5 @@
 # Overview
 	DevelopEx test task.
-	According to spec there is no reason to make it as standalone OTP application so it was done as OTP library.
-	There are two implementation: with handle TTL via timer (master) and with storing expire time in DB (Expire_in_DB branch).
 	
 # Installation
 ```
@@ -27,9 +25,7 @@
 	cache:set(Key :: term(), Val :: term(), Opts :: [{ttl, Seconds :: infinity | non_neg_integer()}]) -> ok.
 ```
 # TODO
-	- Make as application + sup?
-	- Is it worth to make properly ct tests for such simple task?
-	- The same about doc/.
+	- ct tests?
 
 # Notes
 	- Since Logger introduced in Erlang/OTP 21.0 so at least this version required.
