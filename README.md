@@ -12,7 +12,7 @@
 ```
 # Usage
 ```
-	cache:start().
+	application:ensure_all_started(cache).
 	cache:set(foo, bar).
 	cache:set(foo, bar, [{ttl, 120}]).
 	cache:set(foo, bar, [{ttl, infinity}]).
