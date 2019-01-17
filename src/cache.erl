@@ -61,6 +61,7 @@ set(Key, Val, Opts) ->
 	Insert = fun(Record) -> mnesia:write(?CACHE_TABLE, Record, write) end,
 	case lists:keyfind(ttl, 1, Opts) of
 		{ttl, 0} ->
+			{atomic, ok} = mnesia:transaction(Insert, [#cache{key=Key, val=Val, ttl=infinity}]),
 			ok;
 		{ttl, infinity} ->
 			{atomic, ok} = mnesia:transaction(Insert, [#cache{key=Key, val=Val, ttl=infinity}]),
@@ -77,7 +78,8 @@ cleanup() ->
 	%% Delete outdated but not yet requested records.
 	Cleanup_iterator = fun (#cache{key=Key}, _) ->
 			case cache:get(Key) of
-				{error, not_found} -> logger:notice("Cleanup: ~p", [Key])
+				{error, not_found} -> logger:notice("Cleanup: ~p", [Key]);
+				_ -> true
 			end
 	end,
 	Run = fun() ->	mnesia:foldr(Cleanup_iterator, [], ?CACHE_TABLE) end,
@@ -99,7 +101,7 @@ handle_call(Request, _From, State) ->
 		cleanup ->
 			New_state = cleanup(),
 			{reply, ok, New_state};
-		true ->
+		_ ->
 			{reply, ok, State}
 	end.
 

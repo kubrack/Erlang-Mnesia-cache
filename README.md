@@ -1,5 +1,9 @@
 # Overview
-	DevelopEx test task.
+	DevelopEx test task - Erlang app for caching data in Mnesia.
+	Default TTL is 60 seconds.
+	Expired data should be automaticly deleted.
+	Data with TTL 'infinity' or 0 shouldn't be deleted.
+	Erlang.mk build tool should be used.
 	
 # Installation
 ```

@@ -8,7 +8,9 @@ test_rec(Key, Val, Ttl) ->
 	case Ttl of
 		0 ->
 			ok = cache:set(Key, Val, [{ttl, Ttl}]),
-			get_n_log(Key, {error, not_found}, "zero");
+			get_n_log(Key, {ok, Val}, "0 immediately"),
+			ok = timer:sleep(timer:seconds(1)),
+			get_n_log(Key, {ok, Val}, "0 + 1");
 		Dttl ->
 			ok = cache:set(Key, Val),
 			get_n_log(Key, {ok, Val}, integer_to_list(Ttl) ++ " default immediately"),
@@ -27,8 +29,13 @@ test_rec(Key, Val, Ttl) ->
 	end.
 
 get_n_log(Key, Res, Info) ->
-	Res = cache:get(Key),
-	io:format("ok ~p: ~p, ~p~n", [Info, Key, Res]).
+	Got = cache:get(Key),
+	if
+		Res == Got ->
+			io:format("ok ~p: ~p, ~p~n", [Info, Key, Res]);
+		true ->
+			io:format("not ok ~p: ~p, got ~p, expected ~p~n", [Info, Key, Got, Res])
+	end.
 
 start() ->
 	application:ensure_all_started(cache),
