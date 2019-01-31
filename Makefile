@@ -1,5 +1,5 @@
 PROJECT = cache
-PROJECT_DESCRIPTION = DevelopEx test task
+PROJECT_DESCRIPTION = Mnesia cache
 PROJECT_VERSION = 0.1.0
 
 LOCAL_DEPS = mnesia
